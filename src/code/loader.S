@@ -28,39 +28,19 @@ VIDEO_DESC:
   SELECTOR_DATA equ (0X0002<<3) + TI_GDT + RPL0
   SELECTOR_VIDEO equ (0X0003<<3) + TI_GDT + RPL0
 
+  total_mem_bytes dd 0
+
   gdt_ptr dw GDT_LIMIT
           dd GDT_BASE
 
-  loadermsg db 'welcome to loader zone!'
+  ards_buf times 244 db 0
+  ards_nr dw 0
 
 start:
-  mov sp,LOADER_BASE_ADDR
-  mov bp,loadermsg
-  mov cx,22
-  mov ax,cs
-  mov es,ax
-  mov ax,0x1301
-  mov bx,0x001f
-  mov dx,0x1800
-  int 0x10
+  
 
-; --------------------------------- 设置进入保护模式 -----------------------------
-; 1 打开A20 gate
-; 2 加载gdt
-; 3 将cr0 的 pe位置1
-    
-  in al,0x92                 ;端口号0x92 中 第1位变成1即可
-  or al,0000_0010b
-  out 0x92,al
 
-  lgdt [gdt_ptr] 
-
-  mov eax,cr0                ;cr0寄存器第0位设置位1
-  or  eax,0x00000001              
-  mov cr0,eax
-
-;------------------------------ 已经打开保护模式 ---------------------------------------
-  jmp dword SELECTOR_CODE:p_mode_start                       ;刷新流水线
+  jmp dword SELECTOR_CODE:p_mode_start
 
  [bits 32]
 p_mode_start: 
