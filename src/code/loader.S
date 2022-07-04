@@ -1,7 +1,7 @@
 %include "boot.inc"
 SECTION loader vstart=LOADER_BASE_ADDR
 LOADER_STACK_TOP equ LOADER_BASE_ADDR
-  jmp loader_start
+jmp start
 
 GDT_BASE: 
   dd 0x00000000
@@ -10,6 +10,7 @@ GDT_BASE:
 CODE_DESC: 
   dd 0x0000FFFF
   dd DESC_CODE_HIGH4
+
 DATA_STACK_DESC:
   dd 0x0000FFFF
   dd DESC_DATA_HIGH4
@@ -27,13 +28,12 @@ VIDEO_DESC:
   SELECTOR_DATA equ (0X0002<<3) + TI_GDT + RPL0
   SELECTOR_VIDEO equ (0X0003<<3) + TI_GDT + RPL0
 
-  gdt_ptr
-  dw GDT_LIMIT
-  dd GDT_BASE
+  gdt_ptr dw GDT_LIMIT
+          dd GDT_BASE
 
   loadermsg db 'welcome to loader zone!'
-    
-loader_start:
+
+start:
   mov sp,LOADER_BASE_ADDR
   mov bp,loadermsg
   mov cx,22
