@@ -76,14 +76,115 @@ loader_start:
     mov byte [gs:6], 'l'
     mov byte [gs:8], 'e'
     mov byte [gs:10], 'd'
-    jmp .done
+    ; 内存检测失败，不再继续向下执行
+    jmp $
 
 .mem_get_ok:
     mov [total_memory_bytes], edx
 
-.done:
-    mov byte [gs:160], 'd'
-    mov byte [gs:162], 'o'
-    mov byte [gs:164], 'n'
-    mov byte [gs:166], 'e'
+    ; 开始进入保护模式
+    ; 打开A20地址线
+    in al, 0x92
+    or al, 00000010B
+    out 0x92, al
+
+    ; 加载gdt
+    lgdt [gdt_ptr]
+
+    ; cr0第0位置1
+    mov eax, cr0
+    or eax, 0x00000001
+    mov cr0, eax
+
+    ; 刷新流水线
+    jmp dword SELECTOR_CODE:p_mode_start
+
+[bits 32]
+p_mode_start:
+    mov ax, SELECTOR_DATA
+    mov ds, ax
+
+    mov es, ax
+    mov ss, ax
+
+    mov esp, LOADER_STACK_TOP
+    mov ax, SELECTOR_VIDEO
+    mov gs, ax
+    
+    call setup_page
+
+    ; 保存gdt表
+    sgdt [gdt_ptr]
+
+    ; 重新设置gdt描述符， 使虚拟地址指向内核的第一个页表
+    mov ebx, [gdt_ptr + 2]
+    or dword [ebx + 0x18 + 4], 0xc0000000
+    add dword [gdt_ptr + 2], 0xc0000000
+    
+    add esp, 0xc0000000
+
+    ; 页目录基地址寄存器
+    mov eax, PAGE_DIR_TABLE_POS
+    mov cr3, eax
+
+    ; 打开分页
+    mov eax, cr0
+    or eax, 0x80000000
+    mov cr0, eax
+
+    lgdt [gdt_ptr]
+
+    mov byte [gs:160], 'V'
+
     jmp $
+
+; 创建页目录以及页表
+setup_page:
+    ; 页目录表占据4KB空间，清零之
+    mov ecx, 4096
+    mov esi, 0
+.clear_page_dir:   
+    mov byte [PAGE_DIR_TABLE_POS + esi], 0
+    inc esi
+    loop .clear_page_dir
+
+; 创建页目录表(PDE)
+.create_pde:
+    mov eax, PAGE_DIR_TABLE_POS
+    ; 0x1000为4KB，加上页目录表起始地址便是第一个页表的地址
+    add eax, 0x1000
+    mov ebx, eax
+
+    ; 设置页目录项属性
+    or eax, PG_US_U | PG_RW_W | PG_P
+    ; 设置第一个页目录项
+    mov [PAGE_DIR_TABLE_POS], eax
+    ; 第768(内核空间的第一个)个页目录项，与第一个相同，这样第一个和768个都指向低端4MB空间
+    mov [PAGE_DIR_TABLE_POS + 0xc00], eax
+    ; 最后一个表项指向自己，用于访问页目录本身
+    sub eax, 0x1000
+    mov [PAGE_DIR_TABLE_POS + 4092], eax
+
+; 创建页表
+    mov ecx, 256
+    mov esi, 0
+    mov edx, PG_US_U | PG_RW_W | PG_P
+.create_pte:
+    mov [ebx + esi * 4], edx
+    add edx, 4096
+    inc esi
+    loop .create_pte
+
+; 创建内核的其它PDE
+    mov eax, PAGE_DIR_TABLE_POS
+    add eax, 0x2000
+    or eax, PG_US_U | PG_RW_W | PG_P
+    mov ebx, PAGE_DIR_TABLE_POS
+    mov ecx, 254
+    mov esi, 769
+.create_kernel_pde:
+    mov [ebx + esi * 4], eax
+    inc esi
+    add eax, 0x1000
+    loop .create_kernel_pde
+    ret
