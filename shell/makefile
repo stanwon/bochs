@@ -1,11 +1,17 @@
-SRC_MBR = ../src/code/kernel/mbr/mbr.S
-SRC_LOADER = ../src/code/kernel/loader/loader.S
-SRC_KERNEL = ../src/code/kernel/main.c
 ASM_INC_FILE_PATH = ../src/code/include/asm
-GCC = gcc
-CC = nasm
-LD = ld
 C_INC_FILE_PATH = ../src/code/include/c
+
+SRC_ASM = ../src/code/kernel/asm
+SRC_C = ../src/code/kernel/c
+
+SRC_MBR = ${SRC_ASM}/mbr/mbr.S
+SRC_LOADER = ${SRC_ASM}/loader/loader.S
+SRC_PRINT = ${SRC_ASM}/print.S
+SRC_KERNEL = ${SRC_C}/main.c
+
+GCC = gcc
+NCC = nasm
+LD = ld
 
 all: clean
 
@@ -13,10 +19,10 @@ loader:	loader.bin
 	mv loader.bin ../out/
 
 mbr.bin:
-	${CC} -I ${ASM_INC_FILE_PATH} -o $@ ${SRC_MBR}
+	${NCC} -I ${ASM_INC_FILE_PATH} -o $@ ${SRC_MBR}
 
 loader.bin:
-	${CC} -I ${ASM_INC_FILE_PATH} -o $@ ${SRC_LOADER}
+	${NCC} -I ${ASM_INC_FILE_PATH} -o $@ ${SRC_LOADER}
 
 main.o:
 	${GCC} -c -o $@ ${SRC_KERNEL}
