@@ -24,11 +24,14 @@ mbr.bin:
 loader.bin:
 	${NCC} -I ${ASM_INC_FILE_PATH} -o $@ ${SRC_LOADER}
 
-main.o:
-	${GCC} -c -o $@ ${SRC_KERNEL}
+print.o:
+	${NCC} -f elf -o $@ ${SRC_PRINT}
 
-kernel.bin: main.o
-	${LD} -Ttext 0xc0001500 -e main -o $@ $<
+main.o:
+	${GCC} -m32 -I ${C_INC_FILE_PATH} -c -o $@ ${SRC_KERNEL}
+
+kernel.bin: main.o print.o
+	${LD} -m elf_i386 -Ttext 0xc0001500 -e main -o $@ $< print.o
 
 clean: mbr.bin loader.bin kernel.bin
 	mv *.bin ../out/

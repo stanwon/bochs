@@ -16,7 +16,7 @@ vgaromimage: file=/usr/share/bochs/VGABIOS-elpin-2.40
 boot: disk
 
 # where do we send log messages?
-log: ../out/log.log
+#log: ../out/log.log
 
 # disable the mouse
 mouse: enabled=0
