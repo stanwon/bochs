@@ -2,8 +2,6 @@
 section loader vstart=LOADER_BASE_ADDR
 LOADER_STACK_TOP equ LOADER_BASE_ADDR
 
-  jmp loader_start
-
 GDT_BASE:
   dd 0x00000000
   dd 0x00000000
@@ -30,11 +28,10 @@ SELECTOR_VIDEO equ (0x0003 << 3) + TI_GDT
 
   gdt_ptr dw GDT_LIMIT
           dd GDT_BASE
-  ards_buf times 244 db 0
-  ards_nr dw 0
-  success db "success"
+  success db "ok"
   fail db "fail"
-
+  ards_buf times 238 db 0
+  ards_nr dw 0
 
 loader_start:
   xor ebx,ebx
@@ -114,12 +111,10 @@ loader_start:
 .mem_get_ok:
   mov [total_mem_bytes],edx
 
-
-
   ;print message
   mov sp,LOADER_BASE_ADDR
   mov bp,success
-  mov cx,7
+  mov cx,2
   mov ax,0x1301
   mov bx,0x001f
   mov dx,0x1800
