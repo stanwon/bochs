@@ -270,6 +270,7 @@ kernel_init:
 
 .each_segment:
     cmp byte [ebx], PT_NULL
+    call print_test
     je .PTNULL
 
     ; 准备mem_cpy参数
@@ -300,4 +301,11 @@ mem_cpy:
 
     pop ecx
     pop ebp
+    ret
+
+print_test:
+    mov byte [gs:0], 't'
+    mov byte [gs:2], 'e'
+    mov byte [gs:4], 's'
+    mov byte [gs:6], 't'
     ret

@@ -161,9 +161,11 @@ p_mode_start:
   mov cr0,eax
   lgdt [gdt_ptr]
 
-  call print_hello
-
-  jmp $
+  jmp SELECTOR_CODE:enter_kenel
+enter_kenel:
+  call kernel_init
+  mov esp,0xc009f000
+  jmp KERNEL_ENTRY_POINT
 
 setup_page:
   mov ecx,4096
@@ -268,7 +270,7 @@ kernel_init:
   mov cx,[KERNEL_BIN_BASE_ADDR+44]
 
 .each_segment:
-  cmp byte [ebx+0],PT_NULL
+  cmp byte [ebx],PT_NULL
   je .PTNULL
   push dword [ebx+16]
   mov eax,[ebx+4]

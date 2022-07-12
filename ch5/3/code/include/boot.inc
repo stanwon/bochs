@@ -1,9 +1,10 @@
 ;---------------------------loader和kernel-------------
 LOADER_BASE_ADDR equ 0x900
 LOADER_START_SECTOR equ 0x2
+PAGE_DIR_TABLE_POS equ 0x100000
 KERNEL_BIN_BASE_ADDR equ 0x70000
 KERNEL_START_SECTOR equ 0x9
-PAGE_DIR_TABLE_POS equ 0x100000
+KERNEL_ENTRY_POINT equ 0xc0001500
 
 ; gdt描述符属性
 ; 段描述符高23位，表示段界限的粒度为4KB
