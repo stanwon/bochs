@@ -252,8 +252,8 @@ rd_disk_m_32:
     mov dx, 0x1f0
 
 .go_on_read:
-    in eax, dx
-    mov [ebx], eax
+    in ax, dx
+    mov [ebx], ax
     add ebx, 2
     loop .go_on_read
     ret
@@ -277,6 +277,7 @@ kernel_init:
   add eax,KERNEL_BIN_BASE_ADDR
   push eax
   push dword [ebx+8]
+  ;something wrong in this function
   call mem_cpy
   add esp,12
 
@@ -295,6 +296,7 @@ mem_cpy:
   mov esi,[ebp+12]
   mov ecx,[ebp+16]
   rep movsb
+  call print_hello
 
   pop ecx
   pop ebp
