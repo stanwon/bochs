@@ -1,3 +1,4 @@
 out
 test
-src/other/hd60M.img.lock
+common/hd60M.img.lock
+common/log.log
