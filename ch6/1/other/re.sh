@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-readelf -a ../../../out/kernel.bin | less
+readelf -a ../../../out/tar/kernel.bin | less
