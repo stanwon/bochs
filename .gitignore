@@ -2,3 +2,6 @@ out
 test
 common/hd60M.img.lock
 common/log.log
+
+common/hd60M.img
+common/log.log
