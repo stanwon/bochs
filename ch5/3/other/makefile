@@ -25,7 +25,7 @@ kernel.bin: main.o
 
 clean: mbr.bin loader.bin kernel.bin
 	mv *.bin ../../../out/
-	rm *.o
+	#rm *.o
 
 test:
 	${NCC} -o $@ ${SRC_TEST}

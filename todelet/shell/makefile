@@ -30,8 +30,8 @@ print.o:
 main.o:
 	${GCC} -m32 -I ${C_INC_FILE_PATH} -c -o $@ ${SRC_KERNEL}
 
-kernel.bin: main.o print.o
-	${LD} -m elf_i386 -Ttext 0xc0001500 -e main -o $@ $< print.o
+kernel.bin: main.o
+	${LD} -m elf_i386 -Ttext 0xc0001500 -e main -o $@ $<
 
 clean: mbr.bin loader.bin kernel.bin
 	mv *.bin ../out/

@@ -165,6 +165,7 @@ p_mode_start:
 enter_kenel:
   call kernel_init
   mov esp,0xc009f000
+  call print_hello
   jmp KERNEL_ENTRY_POINT
 
 setup_page:
@@ -208,7 +209,7 @@ setup_page:
 
 rd_disk_m_32:
     mov esi, eax
-    mov edi, ecx
+    mov di, cx
 
     mov dx, 0x1f2
     mov al, cl
@@ -245,10 +246,10 @@ rd_disk_m_32:
     cmp al, 0x08
     jnz .not_ready
 
-    mov eax, edi
-    mov edx, 256
-    mul edx
-    mov ecx, eax
+    mov ax, di
+    mov dx, 256
+    mul dx
+    mov cx, ax
     mov dx, 0x1f0
 
 .go_on_read:
@@ -268,6 +269,7 @@ kernel_init:
   mov ebx,[KERNEL_BIN_BASE_ADDR+28]
   add ebx, KERNEL_BIN_BASE_ADDR
   mov cx,[KERNEL_BIN_BASE_ADDR+44]
+  mov cx,4
 
 .each_segment:
   cmp byte [ebx],PT_NULL
@@ -293,14 +295,18 @@ mem_cpy:
   push ecx
 
   mov edi,[ebp+8]
+  cmp edi,0x08048000
+  jnz no_change
+  mov edi,0xc0001000
+no_change:
   mov esi,[ebp+12]
   mov ecx,[ebp+16]
   rep movsb
-  call print_hello
 
   pop ecx
   pop ebp
   ret
+
 
 print_hello:
   mov byte [gs:0x00],'h'
