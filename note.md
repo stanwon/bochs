@@ -330,8 +330,7 @@
       or eax,0x00000001
       mov cr0,eax
   - bochs查看保护模式下的信息
-    - 
-
+  
 
 
 
