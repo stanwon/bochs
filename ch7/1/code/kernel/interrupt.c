@@ -28,13 +28,13 @@ static void pic_init(void) {
   outb(PIC_M_CTRL, 0x11);
   outb(PIC_M_DATA, 0x20);
 
-  outb(PIC_M_CTRL, 0x04);
+  outb(PIC_M_DATA, 0x04);
   outb(PIC_M_DATA, 0x01);
 
   outb(PIC_S_CTRL, 0x11);
   outb(PIC_S_DATA, 0x28);
 
-  outb(PIC_S_CTRL, 0x02);
+  outb(PIC_S_DATA, 0x02);
   outb(PIC_S_DATA, 0x01);
 
   outb(PIC_M_DATA, 0xfe);
@@ -55,7 +55,7 @@ static void make_idt_desc(ST_GATE_DESC *p_gdesc, U8 attr,
 static void idt_desc_init(void) {
   int i;
   for (i = 0; i < IDT_DES_CNT; i++) {
-    make_idt_desc(&idt[i], IDT_DESC_DPL0, intr_entry_table[i]);
+    make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);
   }
   put_str("idt_desc_init donE\n");
 }
