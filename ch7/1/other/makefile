@@ -44,7 +44,6 @@ mbr.bin: ${SRC_MBR}
 kernel.bin: main.o print.o kernel.o interrupt.o init.o
 	${LD} -m elf_i386 ${OBJ_PATH}/*.o -Ttext 0xc0001500 -e main -o ${TARGET_PATH}/$@
 
-
 clean_obj:
 	rm ${OBJ_PATH}/*
 

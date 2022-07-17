@@ -3,12 +3,12 @@
 #include "../include/io.h"
 #include "../include/print.h"
 
-#define PIC_M_CTRL 0x20
-#define PIC_M_DATA 0x21
-#define PIC_S_CTRL 0xa0
-#define PIC_S_DATA 0xa1
+#define PIC_M_CTRL 0x20 //主片的控制端口是0x20
+#define PIC_M_DATA 0x21 //主片的数据端口是0x21
+#define PIC_S_CTRL 0xa0 //从片的控制端口是0xa0
+#define PIC_S_DATA 0xa1 //从片的数据端口是0xa1
 
-#define IDT_DES_CNT 0x21
+#define IDT_DESC_CNT 0x21
 
 typedef struct gate_desc {
   U16 func_offset_low_word;
@@ -20,9 +20,11 @@ typedef struct gate_desc {
 
 static void make_idt_desc(ST_GATE_DESC *p_gdesc, U8 attr,
                           intr_handler function);
-static ST_GATE_DESC idt[IDT_DES_CNT];
+static ST_GATE_DESC idt[IDT_DESC_CNT];
 
-extern intr_handler intr_entry_table[IDT_DES_CNT];
+char *intr_name[IDT_DESC_CNT];
+intr_handler idt_table[IDT_DESC_CNT];
+extern intr_handler intr_entry_table[IDT_DESC_CNT];
 
 static void pic_init(void) {
   outb(PIC_M_CTRL, 0x11);
@@ -54,15 +56,53 @@ static void make_idt_desc(ST_GATE_DESC *p_gdesc, U8 attr,
 
 static void idt_desc_init(void) {
   int i;
-  for (i = 0; i < IDT_DES_CNT; i++) {
+  for (i = 0; i < IDT_DESC_CNT; i++) {
     make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);
   }
   put_str("idt_desc_init donE\n");
 }
 
+static void general_intr_handler(U8 vec_nr) {
+  if (0x27 == vec_nr || 0x2f == vec_nr) {
+    return;
+  }
+  put_str("int vector: 0x");
+  put_int(vec_nr);
+  put_char('\n');
+}
+
+static void exception_init(void) {
+  int i;
+  for (i = 0; i < IDT_DESC_CNT; i++) {
+    idt_table[i] = general_intr_handler;
+    intr_name[i] = "unknow";
+  }
+  intr_name[0] = "#DE Divide Error";
+  intr_name[1] = "#DB Debug Exception";
+  intr_name[2] = "NMI Interrupt";
+  intr_name[3] = "#BP Breakpoint Exception";
+  intr_name[4] = "#OF Overflow Exception";
+  intr_name[5] = "#BR Bound Range Exceeded Exception";
+  intr_name[6] = "#UD Invalid Opcode Exception";
+  intr_name[7] = "#NM Device Not Available Exception";
+  intr_name[8] = "#DF Double Fault Exception";
+  intr_name[9] = "COPROCESSOR Segment Overrun";
+  intr_name[10] = "#TS Invalid Tss Exception";
+  intr_name[11] = "#NP Segment Not Present";
+  intr_name[12] = "#SS Stack Fault Exception";
+  intr_name[13] = "#GP General Protection Exception";
+  intr_name[14] = "#PF Page-Fault Exception";
+  //intr_name[15] = "";
+  intr_name[16] = "#MF 0x87 Fpu Floating-Point Error";
+  intr_name[17] = "#AC Alignment Check Exception";
+  intr_name[18] = "#MC Machine-Check Exception";
+  intr_name[19] = "#XF Simd Floating-Point Exception";
+}
+
 void idt_init() {
   put_str("idt_init start\n");
   idt_desc_init();
+  exception_init();
   pic_init();
 
   U64 idt_operand = ((sizeof(idt) - 1) | ((U64)((U32)idt << 16)));

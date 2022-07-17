@@ -2,7 +2,6 @@
 #include "../include/init.h"
 
 int main(void) {
-
   put_str("This is kernel\n");
   init_all();
   asm volatile("sti");

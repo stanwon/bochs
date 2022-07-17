@@ -1,0 +1,3 @@
+gcc -I ../code/include -m32 -c -fno-stack-protector -fno-builtin -o ../../../out/obj/main.o ../code/kernel/main.c
+nasm -f elf -o ../../../out/obj/print.o ../code/kernel/lib/print.S
+nasm -f elf -o ../../../out/obj/kernel.o ../code/kernel/kernel.S
