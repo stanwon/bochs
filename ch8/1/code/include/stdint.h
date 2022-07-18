@@ -10,4 +10,7 @@ typedef unsigned short int U16;
 typedef unsigned int U32;
 typedef unsigned long long int U64;
 
+#define NULL ((void*)0)
+#define bool _Bool
+
 #endif
