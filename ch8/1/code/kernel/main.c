@@ -5,7 +5,9 @@
 int main(void) {
   put_str("This is kernel\n");
   init_all();
-  ASSERT(1==2);
+
+  U32 mem_bytes_total = (*(U32 *)(0xb00));
+  put_int(mem_bytes_total);
 
   while (1)
     ;
