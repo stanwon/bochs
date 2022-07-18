@@ -151,7 +151,7 @@ put_char:
   mov ecx,80
 
 .cls:
-  mov word [gs:ebx],0x0730
+  mov word [gs:ebx],0x0720
   add ebx,2
   loop .cls
   mov bx,1920

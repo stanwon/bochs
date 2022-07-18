@@ -12,13 +12,13 @@
 
 #define SELECTOR_K_CODE ((1 << 3) + (TI_GDT << 2) + RPL0)
 #define SELECTOR_K_DATA ((2 << 3) + (TI_GDT << 2) + RPL0)
-#define SELECTOR_K_STACK SELECTOR_K_CODE
+#define SELECTOR_K_STACK SELECTOR_K_DATA
 #define SELECTOR_K_GS ((3 << 3) + (TI_GDT << 2) + RPL0)
 
 #define IDT_DESC_P 1
 #define IDT_DESC_DPL0 0
 #define IDT_DESC_DPL3 3
-#define IDT_DESC_32_TYPE 0xe
+#define IDT_DESC_32_TYPE 0xE
 #define IDT_DESC_16_TYPE 0x6
 
 #define IDT_DESC_ATTR_DPL0                                                     \

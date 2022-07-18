@@ -12,7 +12,7 @@ static inline void outsw(U16 port, const void *addr, U32 word_cnt) {
 
 static inline U8 inb(U16 port) {
   U8 data;
-  asm volatile("inb %w1, %b0" : "+a"(data) : "Nd"(port));
+  asm volatile("inb %w1, %b0" : "=a"(data) : "Nd"(port));
   return data;
 }
 

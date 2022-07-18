@@ -50,8 +50,8 @@ static void pic_init(void) {
 
 static void make_idt_desc(ST_GATE_DESC *p_gdesc, U8 attr,
                           intr_handler function) {
-  p_gdesc->func_offset_low_word = (U32)function & 0x000000000000FFFF;
-  p_gdesc->func_offset_high_word = ((U32)function & 0x00000000FFFF0000) >> 16;
+  p_gdesc->func_offset_low_word = (U32)function & 0x0000FFFF;
+  p_gdesc->func_offset_high_word = ((U32)function & 0xFFFF0000) >> 16;
   p_gdesc->attribute = attr;
   p_gdesc->dcount = 0;
   p_gdesc->selector = SELECTOR_K_CODE;
@@ -62,7 +62,7 @@ static void idt_desc_init(void) {
   for (i = 0; i < IDT_DESC_CNT; i++) {
     make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);
   }
-  put_str("idt_desc_init donE\n");
+  put_str("idt_desc_init done\n");
 }
 
 static void general_intr_handler(U8 vec_nr) {

@@ -1,11 +1,13 @@
-#include "../include/print.h"
 #include "../include/init.h"
+#include "../include/print.h"
 
 int main(void) {
   put_str("This is kernel\n");
   init_all();
-  asm volatile("sti");
-  while (1)
+  put_str("hello\n");
+  //asm volatile("sti");
+  while (1) {
     ;
+  }
   return 0;
 }

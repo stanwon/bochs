@@ -59,7 +59,7 @@ static void idt_desc_init(void) {
   for (i = 0; i < IDT_DESC_CNT; i++) {
     make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);
   }
-  put_str("idt_desc_init donE\n");
+  put_str("idt_desc_init done\n");
 }
 
 static void general_intr_handler(U8 vec_nr) {

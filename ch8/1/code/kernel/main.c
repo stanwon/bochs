@@ -5,8 +5,8 @@
 int main(void) {
   put_str("This is kernel\n");
   init_all();
-//  ASSERT(1==2);
-  put_str("filename: ");put_str(__FILE_NAME__);put_str("\n");
+  ASSERT(1==2);
+
   while (1)
     ;
   return 0;
