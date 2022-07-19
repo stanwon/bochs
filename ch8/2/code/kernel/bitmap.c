@@ -17,10 +17,6 @@ bool bitmap_scan_test(ST_BITMAP *btmp, U32 bit_idx) {
 
 int bitmap_scan(ST_BITMAP *btmp, U32 cnt) {
   U32 idx_byte = 0;
-  int idx_bit_start = -1;
-  U32 bit_left = 0;
-  U32 bit_next = 0;
-  U32 count = 0;
   while ((idx_byte < btmp->btmp_bytes_len) && (0xff == btmp->bits[idx_byte])) {
     idx_byte++;
   }
@@ -30,19 +26,20 @@ int bitmap_scan(ST_BITMAP *btmp, U32 cnt) {
     return -1;
   }
 
+
   int idx_bit = 0;
   while ((U8)(BITMAP_MASK << idx_bit) & btmp->bits[idx_byte]) {
     idx_bit++;
   }
 
-  idx_bit_start = idx_byte * 8 + idx_bit;
+  int idx_bit_start = idx_byte * 8 + idx_bit;
   if (1 == cnt) {
     return idx_bit_start;
   }
 
-  bit_left = (btmp->btmp_bytes_len * 8 - idx_bit_start);
-  bit_next = idx_bit_start + 1;
-  count = 0;
+  U32 bit_left = (btmp->btmp_bytes_len * 8 - idx_bit_start);
+  U32 bit_next = idx_bit_start + 1;
+  U32 count = 1;
 
   idx_bit_start = -1;
   while (bit_left-- > 0) {

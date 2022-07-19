@@ -49,17 +49,9 @@ memory.o: ${SRC_MEMORY}
 string.o: ${SRC_STRING}
 	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
 
-objs: main.o kernel.o interrupt.o debug.o memory.o bitmap.o init.o string.o print.o
+objs: main.o interrupt.o debug.o memory.o bitmap.o init.o string.o print.o kernel.o
 
-kernel.bin: main.o \
-						init.o \
-						interrupt.o \
-						kernel.o \
-						memory.o \
-						bitmap.o \
-						debug.o \
-						string.o \
-						print.o
+kernel.bin: objs
 	${LD} -m elf_i386 -Ttext 0xc0001500 -e main -Map ${OBJ_PATH}/kernel.map -o ${TARGET_PATH}/$@ \
 		${OBJ_PATH}/main.o \
 		${OBJ_PATH}/init.o \

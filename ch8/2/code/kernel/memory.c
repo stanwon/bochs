@@ -17,7 +17,7 @@ ST_VIRTUAL_ADDR kernel_vaddr;
 
 static void *vaddr_get(EN_POOL_FLAG pf, U32 pg_cnt) {
   int vaddr_start = 0;
-  int bit_idx_start = 1;
+  int bit_idx_start = -1;
   U32 cnt = 0;
   if (EN_PF_KERNEL) {
     bit_idx_start = bitmap_scan(&kernel_vaddr.vaddr_bitmap, pg_cnt);
@@ -29,11 +29,6 @@ static void *vaddr_get(EN_POOL_FLAG pf, U32 pg_cnt) {
       bitmap_set(&kernel_pool.pool_bitmap, bit_idx_start + cnt++, 1);
     }
     vaddr_start = kernel_vaddr.vaddr_start + bit_idx_start * PG_SIZE;
-    put_str("kernel_vaddr.vaddr_start: ");
-    put_int((U32)kernel_vaddr.vaddr_start);
-    put_str("\n");
-    put_int((U32)bit_idx_start);
-    put_str("\n");
   } else {
   }
   return (void *)vaddr_start;
