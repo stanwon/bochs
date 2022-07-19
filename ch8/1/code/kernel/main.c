@@ -7,7 +7,6 @@ int main(void) {
   init_all();
 
   U32 mem_bytes_total = (*(U32 *)(0xb00));
-  put_int(mem_bytes_total);
 
   while (1)
     ;
