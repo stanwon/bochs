@@ -2,9 +2,10 @@
 #include "../include/debug.h"
 #include "../include/global.h"
 #include "../include/interrupt.h"
-#include "../include/memory.h"
-#include "../include/string.h"
 #include "../include/list.h"
+#include "../include/memory.h"
+#include "../include/print.h"
+#include "../include/string.h"
 
 #define PG_SIZE 4096
 
@@ -66,6 +67,7 @@ ST_TASK_STRUCT *thread_start(char *name, int prio, thread_func function,
   thread_create(thread, function, func_arg);
 
   ASSERT(!elem_find(&thread_ready_list, &thread->general_tag));
+  put_char('<');put_int(__LINE__);put_char('>');
   list_append(&thread_ready_list, &thread->general_tag);
 
   ASSERT(!elem_find(&thread_all_list, &thread->all_list_tag));
@@ -106,5 +108,15 @@ void schedule() {
   ASSERT(!list_empty(&thread_ready_list));
   thread_tag = NULL;
   thread_tag = list_pop(&thread_ready_list);
-  ST_TASK_STRUCT *next = elem2entry(ST_TASK_STRUCT)
+  ST_TASK_STRUCT *next = elem2entry(ST_TASK_STRUCT, general_tag, thread_tag);
+  next->status = EN_TASK_RUNNING;
+  switch_to(cur, next);
+}
+
+void thread_init(void) {
+  put_str("thread_init start\n");
+  list_init(&thread_ready_list);
+  list_init(&thread_all_list);
+  make_main_thread();
+  put_str("thread_init done\n");
 }

@@ -1,6 +1,7 @@
 #include "../include/list.h"
 #include "../include/interrupt.h"
 #include "../include/stdint.h"
+#include "../include/print.h"
 
 void list_init(ST_LIST *list) {
   list->head.prev = NULL;

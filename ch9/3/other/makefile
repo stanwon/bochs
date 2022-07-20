@@ -22,8 +22,12 @@ SRC_STRING 		= ../code/kernel/lib/string.c
 
 SRC_PRINT = ../code/kernel/lib/print.S
 SRC_KERNEL = ../code/kernel/kernel.S
+SRC_SWITCH = ../code/kernel/switch.S
 
 all: kernel.bin
+
+switch.o: ${SRC_SWITCH}
+	${NCC} ${NFLAGS} -o ${OBJ_PATH}/$@ $<
 
 print.o: ${SRC_PRINT}
 	${NCC} ${NFLAGS} -o ${OBJ_PATH}/$@ $<
@@ -71,6 +75,7 @@ objs: main.o \
 			list.o \
 			timer.o \
 			string.o \
+			switch.o \
 			print.o \
 			kernel.o
 
@@ -86,6 +91,7 @@ kernel.bin: objs
 		${OBJ_PATH}/list.o \
 		${OBJ_PATH}/timer.o \
 		${OBJ_PATH}/string.o \
+		${OBJ_PATH}/switch.o \
 		${OBJ_PATH}/debug.o \
 		${OBJ_PATH}/print.o
 
