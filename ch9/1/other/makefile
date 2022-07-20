@@ -15,6 +15,7 @@ SRC_INIT 			= ../code/kernel/init.c
 SRC_DEBUG 		= ../code/kernel/debug.c
 SRC_BITMAP 		= ../code/kernel/bitmap.c
 SRC_MEMORY 		= ../code/kernel/memory.c
+SRC_THREAD 		= ../code/kernel/thread.c
 SRC_STRING 		= ../code/kernel/lib/string.c
 
 SRC_PRINT = ../code/kernel/lib/print.S
@@ -49,7 +50,19 @@ memory.o: ${SRC_MEMORY}
 string.o: ${SRC_STRING}
 	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
 
-objs: main.o interrupt.o debug.o memory.o bitmap.o init.o string.o print.o kernel.o
+thread.o: ${SRC_THREAD}
+	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
+
+objs: main.o \
+			interrupt.o\
+			debug.o \
+			memory.o \
+			bitmap.o \
+			init.o \
+			thread.o \
+			string.o \
+			print.o \
+			kernel.o
 
 kernel.bin: objs
 	${LD} -m elf_i386 -Ttext 0xc0001500 -e main -Map ${OBJ_PATH}/kernel.map -o ${TARGET_PATH}/$@ \
@@ -59,6 +72,7 @@ kernel.bin: objs
 		${OBJ_PATH}/memory.o \
 		${OBJ_PATH}/bitmap.o \
 		${OBJ_PATH}/kernel.o \
+		${OBJ_PATH}/thread.o \
 		${OBJ_PATH}/string.o \
 		${OBJ_PATH}/debug.o \
 		${OBJ_PATH}/print.o
