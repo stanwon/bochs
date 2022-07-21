@@ -19,7 +19,7 @@ static void *vaddr_get(EN_POOL_FLAG pf, U32 pg_cnt) {
   int vaddr_start = 0;
   int bit_idx_start = -1;
   U32 cnt = 0;
-  if (EN_PF_KERNEL) {
+  if (pf == EN_PF_KERNEL) {
     bit_idx_start = bitmap_scan(&kernel_vaddr.vaddr_bitmap, pg_cnt);
     if (-1 == bit_idx_start) {
       return NULL;
@@ -41,7 +41,7 @@ U32 *pte_ptr(U32 vaddr) {
 }
 
 U32 *pde_ptr(U32 vaddr) {
-  U32 *pde = (U32 *)(0xffff0000 + PDE_IDX(vaddr) * 4);
+  U32 *pde = (U32 *)(0xfffff000 + PDE_IDX(vaddr) * 4);
   return pde;
 }
 

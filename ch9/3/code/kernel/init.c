@@ -3,6 +3,7 @@
 #include "../include/interrupt.h"
 #include "../include/memory.h"
 #include "../include/timer.h"
+#include "../include/thread.h"
 
 void init_all()
 {
@@ -10,4 +11,5 @@ void init_all()
   idt_init();
   mem_init();
   timer_init();
+  thread_init();
 }

@@ -52,8 +52,8 @@ typedef struct tag_thread_stack {
 typedef struct tag_task_struct {
   U32 *self_kstack;
   EN_TASK_STATUS status;
-  U8 priority;
   char name[16];
+  U8 priority;
   U8 ticks;
   U32 elapsed_ticks;
   ST_LIST_ELEM general_tag;
@@ -65,5 +65,6 @@ typedef struct tag_task_struct {
 ST_TASK_STRUCT *thread_start(char *name, int prio, thread_func function, void *func_arg);
 ST_TASK_STRUCT *running_thread();
 void schedule();
+void thread_init(void);
 
 #endif

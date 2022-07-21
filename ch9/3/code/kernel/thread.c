@@ -16,6 +16,7 @@ static ST_LIST_ELEM *thread_tag;
 
 extern void switch_to(ST_TASK_STRUCT *cur, ST_TASK_STRUCT *nex);
 
+//get current PCB
 ST_TASK_STRUCT *running_thread() {
   U32 esp;
   asm("mov %%esp, %0" : "=g"(esp));
@@ -67,7 +68,6 @@ ST_TASK_STRUCT *thread_start(char *name, int prio, thread_func function,
   thread_create(thread, function, func_arg);
 
   ASSERT(!elem_find(&thread_ready_list, &thread->general_tag));
-  put_char('<');put_int(__LINE__);put_char('>');
   list_append(&thread_ready_list, &thread->general_tag);
 
   ASSERT(!elem_find(&thread_all_list, &thread->all_list_tag));
