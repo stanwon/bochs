@@ -26,4 +26,17 @@
 #define IDT_DESC_ATTR_DPL3                                                     \
   ((IDT_DESC_P << 7) + (IDT_DESC_DPL3 << 5) + IDT_DESC_32_TYPE)
 
+#define out_int(a) \
+  put_str("["); \
+  put_str(__FILE__); \
+  put_str("] "); \
+  put_str(__FUNCTION__); \
+  put_str("() <0x"); \
+  put_int(__LINE__); \
+  put_str(">: "); \
+  put_str(#a); \
+  put_str(" = "); \
+  put_int(a); \
+  put_str("\n");
+
 #endif

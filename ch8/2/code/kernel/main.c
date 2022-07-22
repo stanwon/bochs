@@ -8,11 +8,10 @@ int main(void) {
   init_all();
 
   void *addr = get_kernel_pages(3);
-  while (1)
-    ;
   put_str("get_kernel_page start vaddr is ");
   put_int((U32)addr);
   put_str("\n");
-
+  while (1)
+    ;
   return 0;
 }

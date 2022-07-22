@@ -1,6 +1,7 @@
 INC_PATH 			= ../code/include
 OBJ_PATH 			= ../../../out/obj
 TARGET_PATH 	= ../../../out/tar
+COMMON_PATH		="../../../common"
 
 NCC = nasm
 GCC = gcc
@@ -25,6 +26,10 @@ SRC_KERNEL = ../code/kernel/kernel.S
 SRC_SWITCH = ../code/kernel/switch.S
 
 all: kernel.bin
+#	dd if=${TARGET_PATH}/mbr.bin of=${COMMON_PATH}/hd60M.img bs=512 count=1 conv=notrunc
+#	dd if=${TARGET_PATH}/loader.bin of=${COMMON_PATH}/hd60M.img bs=512 seek=2 count=4 conv=notrunc
+	dd if=${TARGET_PATH}/kernel.bin of=${COMMON_PATH}/hd60M.img bs=512 seek=9 count=200 conv=notrunc
+	bochs -f bochsrc.disk
 
 switch.o: ${SRC_SWITCH}
 	${NCC} ${NFLAGS} -o ${OBJ_PATH}/$@ $<

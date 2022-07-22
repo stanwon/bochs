@@ -53,9 +53,9 @@ int bitmap_scan(ST_BITMAP *btmp, U32 cnt) {
       idx_bit_start = bit_next - cnt + 1;
       break;
     }
-
     bit_next++;
   }
+
   return idx_bit_start;
 }
 

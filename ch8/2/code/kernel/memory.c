@@ -25,9 +25,11 @@ static void *vaddr_get(EN_POOL_FLAG pf, U32 pg_cnt) {
       return NULL;
     }
 
+#if 0
     while (cnt < pg_cnt) {
-      bitmap_set(&kernel_pool.pool_bitmap, bit_idx_start + cnt++, 1);
+      bitmap_set(&kernel_vaddr.vaddr_bitmap, bit_idx_start + cnt++, 1);
     }
+#endif
     vaddr_start = kernel_vaddr.vaddr_start + bit_idx_start * PG_SIZE;
   } else {
   }
@@ -47,7 +49,6 @@ U32 *pde_ptr(U32 vaddr) {
 
 static void *palloc(ST_POOL *m_pool) {
   int bit_idx = bitmap_scan(&m_pool->pool_bitmap, 1);
-  put_int(bit_idx);
   if (-1 == bit_idx) {
     return NULL;
   }

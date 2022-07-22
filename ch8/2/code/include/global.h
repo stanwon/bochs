@@ -26,7 +26,14 @@
 #define IDT_DESC_ATTR_DPL3                                                     \
   ((IDT_DESC_P << 7) + (IDT_DESC_DPL3 << 5) + IDT_DESC_32_TYPE)
 
-#define out_int(file, line, a) \
-  put_str(file);put_str("()<");put_int(line);put_str(">");put_int()
+#define out_int(func, line, str, a) \
+  put_str(func); \
+  put_str("()<"); \
+  put_int(line); \
+  put_str(">: "); \
+  put_str(str); \
+  put_str(" = "); \
+  put_int(a); \
+  put_str("\n");
 
 #endif

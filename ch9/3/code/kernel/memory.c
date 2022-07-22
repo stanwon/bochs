@@ -26,10 +26,11 @@ static void *vaddr_get(EN_POOL_FLAG pf, U32 pg_cnt) {
     }
 
     while (cnt < pg_cnt) {
-      bitmap_set(&kernel_pool.pool_bitmap, bit_idx_start + cnt++, 1);
+      bitmap_set(&kernel_vaddr.vaddr_bitmap, bit_idx_start + cnt++, 1);
     }
     vaddr_start = kernel_vaddr.vaddr_start + bit_idx_start * PG_SIZE;
   } else {
+    //user
   }
   return (void *)vaddr_start;
 }
