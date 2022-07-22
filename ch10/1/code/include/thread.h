@@ -66,5 +66,7 @@ ST_TASK_STRUCT *thread_start(char *name, int prio, thread_func function, void *f
 ST_TASK_STRUCT *running_thread();
 void schedule();
 void thread_init(void);
+void thread_block(EN_TASK_STATUS stat);
+void thread_unblock(ST_TASK_STRUCT *pthread);
 
 #endif

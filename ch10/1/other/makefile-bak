@@ -1,0 +1,85 @@
+DISK = ../../../common/hd60M.img
+BUILD_DIR = ../../../build
+SRC_DIR_BOOT = ../code/boot
+SRC_DIR_KERNEL = ../code/kernel
+SRC_DIR_LIB = ../code/kernel/lib
+ENTRY_POINT = 0xc0001500
+AS = nasm
+CC = gcc
+LD = ld
+LIB = -I ../code/include
+ASFLAGS = -f elf
+CFLAGS = -Wall $(LIB) -c -fno-builtin -W -Wstrict-prototypes \
+				 -Wmissing-prototypes
+LDFLAGS = -Ttext $(ENTRY_POINT) -e main
+OBJS = $(BUILD_DIR)/main.o \
+			 $(BUILD_DIR)/init.o \
+			 $(BUILD_DIR)/interrupt.o \
+			 $(BUILD_DIR)/kernel.o \
+			 $(BUILD_DIR)/print.o \
+			 $(BUILD_DIR)/debug.o
+#			 $(BUILD_DIR)/timer.o \
+
+main.o: $(SRC_DIR_KERNEL)/main.c \
+#$(BUILD_DIR)/main.o: $(SRC_DIR_KERNEL)/main.c \
+											$(LIB)/print.h \
+											$(LIB)/stdint.h \
+											$(LIB)/init.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD_DIR)/init.o: $(SRC_DIR_KERNEL)/init.c \
+											$(LIB)/print.h \
+											$(LIB)/init.h \
+											$(LIB)/stdint.h \
+											$(LIB)/interrupt.h
+#											$(LIB)/timer.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD_DIR)/interrupt.o: $(SRC_DIR_KERNEL)/interrupt.c \
+											$(LIB)/interrupt.h \
+											$(LIB)/stdint.h \
+											$(LIB)/global.h \
+											$(LIB)/io.h \
+											$(LIB)/print.h
+	$(CC) $(CFLAGS) $< -o $@
+
+#$(BUILD_DIR)/timer.o: $(SRC_DIR)/timer.c \
+											$(LIB)/timer.h \
+											$(LIB)/stdint.h \
+											$(LIB)/io.h \
+											$(LIB)/print.h
+#	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD_DIR)/debug.o: $(SRC_DIR_KERNEL)/debug.c \
+											$(LIB)/debug.h \
+											$(LIB)/print.h \
+											$(LIB)/stdint.h \
+											$(LIB)/interrupt.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD_DIR)/kernel.o: $(SRC_DIR_KERNEL)/kernel.S
+	$(AS) $(ASFLAGS) $< -o $@
+$(BUILD_DIR)/print.o: $(SRC_DIR_LIB)/print.S
+	$(AS) $(ASFLAGS) $< -o $@
+
+$(BUILD_DIR)/kernel.bin: $(OBJS)
+	$(LD) $(LDFLAGS) $^ -o $@
+
+.PHONY: mk_dir hd clean all
+
+mk_dir:
+	if [[ ! -d $(BUILD_DIR) ]];then mkdir $(BUILD_DIR);fi
+
+hd:
+	dd if=$(BUILD_DIR)/kernel.bin \
+			of=$(DISK) \
+			bs=512 count=200 seek=9 conv=notrunc
+
+clean:
+	rm -f $(BUILD_DIR)/*
+
+build: $(BUILD_DIR)/kernel.bin
+
+main: main.o
+
+all: mk_dir build hd
