@@ -5,6 +5,7 @@
 #include "../include/timer.h"
 #include "../include/thread.h"
 #include "../include/console.h"
+#include "../include/keyboard.h"
 
 void init_all()
 {
@@ -14,4 +15,5 @@ void init_all()
   thread_init();
   timer_init();
   console_init();
+  //keyboard_init();
 }

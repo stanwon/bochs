@@ -1,0 +1,293 @@
+Only in 2/code/include: keyboard.h
+diff -r -c 1/code/kernel/init.c 2/code/kernel/init.c
+*** 1/code/kernel/init.c	2022-07-23 11:43:24.725454109 +0800
+--- 2/code/kernel/init.c	2022-07-24 13:21:50.151644252 +0800
+***************
+*** 5,10 ****
+--- 5,11 ----
+  #include "../include/timer.h"
+  #include "../include/thread.h"
+  #include "../include/console.h"
++ #include "../include/keyboard.h"
+  
+  void init_all()
+  {
+***************
+*** 14,17 ****
+--- 15,19 ----
+    thread_init();
+    timer_init();
+    console_init();
++   //keyboard_init();
+  }
+diff -r -c 1/code/kernel/interrupt.c 2/code/kernel/interrupt.c
+*** 1/code/kernel/interrupt.c	2022-07-23 10:56:24.476212935 +0800
+--- 2/code/kernel/interrupt.c	2022-07-24 13:47:55.028208061 +0800
+***************
+*** 8,14 ****
+  #define PIC_S_CTRL 0xa0 //从片的控制端口是0xa0
+  #define PIC_S_DATA 0xa1 //从片的数据端口是0xa1
+  
+! #define IDT_DESC_CNT 0x21
+  
+  #define EFLAGS_IF 0x00000200
+  #define GET_FLAGS(EFLAG_VAR) asm volatile("pushfl; popl %0" : "=g"(EFLAG_VAR))
+--- 8,14 ----
+  #define PIC_S_CTRL 0xa0 //从片的控制端口是0xa0
+  #define PIC_S_DATA 0xa1 //从片的数据端口是0xa1
+  
+! #define IDT_DESC_CNT 0x30
+  
+  #define EFLAGS_IF 0x00000200
+  #define GET_FLAGS(EFLAG_VAR) asm volatile("pushfl; popl %0" : "=g"(EFLAG_VAR))
+***************
+*** 46,51 ****
+--- 46,54 ----
+    outb(PIC_M_DATA, 0xfe);
+    outb(PIC_S_DATA, 0xff);
+  
++   //outb(PIC_M_DATA, 0xfd);
++   //outb(PIC_S_DATA, 0xff);
++ 
+    put_str("pic_init done\n");
+  }
+  
+***************
+*** 70,81 ****
+--- 73,86 ----
+    if (0x27 == vec_nr || 0x2f == vec_nr) {
+      return;
+    }
++ 
+    set_cursor(0);
+    int cursor_pos = 0;
+    while (cursor_pos < 320) {
+      put_char(' ');
+      cursor_pos++;
+    }
++ 
+    set_cursor(0);
+    put_str("!!!!!!  Exception message begin !!!!!!");
+    set_cursor(88);
+***************
+*** 87,92 ****
+--- 92,98 ----
+      put_int(page_fault_vaddr);
+    }
+    put_str("\n!!!!!!  Exception message end   !!!!!!");
++ 
+    while (1)
+      ;
+  }
+diff -r -c 1/code/kernel/kernel.S 2/code/kernel/kernel.S
+*** 1/code/kernel/kernel.S	2022-07-23 10:56:24.476212935 +0800
+--- 2/code/kernel/kernel.S	2022-07-23 18:59:11.187162133 +0800
+***************
+*** 76,79 ****
+--- 76,94 ----
+  VECTOR 0x1e,ERROR_CODE
+  VECTOR 0x1f,ZERO
+  VECTOR 0x20,ZERO
++ VECTOR 0x21,ZERO
++ VECTOR 0x22,ZERO
++ VECTOR 0x23,ZERO
++ VECTOR 0x24,ZERO
++ VECTOR 0x25,ZERO
++ VECTOR 0x26,ZERO
++ VECTOR 0x27,ZERO
++ VECTOR 0x28,ZERO
++ VECTOR 0x29,ZERO
++ VECTOR 0x2a,ZERO
++ VECTOR 0x2b,ZERO
++ VECTOR 0x2c,ZERO
++ VECTOR 0x2d,ZERO
++ VECTOR 0x2e,ZERO
++ VECTOR 0x2f,ZERO
+  
+Only in 2/code/kernel: keyboard.c
+diff -r -c 1/code/kernel/list.c 2/code/kernel/list.c
+*** 1/code/kernel/list.c	2022-07-24 15:10:29.441221726 +0800
+--- 2/code/kernel/list.c	2022-07-24 13:41:58.114898072 +0800
+***************
+*** 14,19 ****
+--- 14,20 ----
+    EN_INTR_STATUS old_status = intr_disable();
+  
+    before->prev->next = elem;
++ 
+    elem->prev = before->prev;
+    elem->next = before;
+  
+***************
+*** 32,39 ****
+--- 33,42 ----
+  
+  void list_remove(ST_LIST_ELEM *pelem) {
+    EN_INTR_STATUS old_status = intr_disable();
++ 
+    pelem->prev->next = pelem->next;
+    pelem->next->prev = pelem->prev;
++ 
+    intr_set_status(old_status);
+  }
+  
+***************
+*** 56,70 ****
+--- 59,76 ----
+  
+  ST_LIST_ELEM *list_traversal(ST_LIST *plist, function func, int arg) {
+    ST_LIST_ELEM *elem = plist->head.next;
++ 
+    if (list_empty(plist)) {
+      return NULL;
+    }
++ 
+    while (elem != &plist->tail) {
+      if (func(elem, arg)) {
+        return elem;
+      }
+      elem = elem->next;
+    }
++ 
+    return NULL;
+  }
+  
+diff -r -c 1/code/kernel/main.c 2/code/kernel/main.c
+*** 1/code/kernel/main.c	2022-07-24 14:48:06.217974206 +0800
+--- 2/code/kernel/main.c	2022-07-24 14:52:44.791289706 +0800
+***************
+*** 18,29 ****
+  
+    intr_enable();
+    while (1) {
+-     console_put_str("main ");
+  #if 0
+      intr_disable();
+      put_str("main ");
+      intr_enable();
+  #endif
+    }
+    return 0;
+  }
+--- 18,29 ----
+  
+    intr_enable();
+    while (1) {
+  #if 0
+      intr_disable();
+      put_str("main ");
+      intr_enable();
+  #endif
++     console_put_str("test ");
+    }
+    return 0;
+  }
+***************
+*** 31,53 ****
+  void k_thread_a(void *arg) {
+    char *para = arg;
+    while (1) {
+-     console_put_str(para);
+  #if 0
+      intr_disable();
+      put_str(para);
+      intr_enable();
+  #endif
+    }
+  }
+  
+  void k_thread_b(void *arg) {
+    char *para = arg;
+    while (1) {
+-     console_put_str(para);
+  #if 0
+      intr_disable();
+      put_str(para);
+      intr_enable();
+  #endif
+    }
+  }
+--- 31,53 ----
+  void k_thread_a(void *arg) {
+    char *para = arg;
+    while (1) {
+  #if 0
+      intr_disable();
+      put_str(para);
+      intr_enable();
+  #endif
++     console_put_str(para);
+    }
+  }
+  
+  void k_thread_b(void *arg) {
+    char *para = arg;
+    while (1) {
+  #if 0
+      intr_disable();
+      put_str(para);
+      intr_enable();
+  #endif
++     console_put_str(para);
+    }
+  }
+diff -r -c 1/code/kernel/timer.c 2/code/kernel/timer.c
+*** 1/code/kernel/timer.c	2022-07-23 10:56:24.482882933 +0800
+--- 2/code/kernel/timer.c	2022-07-24 13:48:22.634872920 +0800
+***************
+*** 25,31 ****
+--- 25,33 ----
+  
+  static void intr_timer_handler(void) {
+    ST_TASK_STRUCT *cur_thread = running_thread();
++ 
+    ASSERT(cur_thread->stack_magic == 0x19870916);
++ 
+    cur_thread->elapsed_ticks++;
+    ticks++;
+  
+diff -r -c 1/other/makefile 2/other/makefile
+*** 1/other/makefile	2022-07-24 14:51:51.854626439 +0800
+--- 2/other/makefile	2022-07-24 14:47:00.287978424 +0800
+***************
+*** 21,26 ****
+--- 21,27 ----
+  SRC_TIMER 		= ../code/kernel/timer.c
+  SRC_CONSOLE 	= ../code/kernel/console.c
+  SRC_SYNC 			= ../code/kernel/sync.c
++ SRC_KEYBOARD 	= ../code/kernel/keyboard.c
+  SRC_STRING 		= ../code/kernel/lib/string.c
+  
+  SRC_PRINT = ../code/kernel/lib/print.S
+***************
+*** 78,83 ****
+--- 79,87 ----
+  sync.o: ${SRC_SYNC}
+  	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
+  
++ keyboard.o: ${SRC_KEYBOARD}
++ 	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
++ 
+  objs: main.o \
+  			init.o \
+  			console.o \
+***************
+*** 89,94 ****
+--- 93,99 ----
+  			list.o \
+  			timer.o \
+  			string.o \
++ 			keyboard.o \
+  			switch.o \
+  			debug.o \
+  			kernel.o \
+***************
+*** 108,113 ****
+--- 113,119 ----
+  		${OBJ_PATH}/list.o \
+  		${OBJ_PATH}/timer.o \
+  		${OBJ_PATH}/string.o \
++ 		${OBJ_PATH}/keyboard.o \
+  		${OBJ_PATH}/switch.o \
+  		${OBJ_PATH}/debug.o \
+  		${OBJ_PATH}/print.o

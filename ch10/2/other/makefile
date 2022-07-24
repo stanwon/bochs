@@ -21,6 +21,7 @@ SRC_LIST 			= ../code/kernel/list.c
 SRC_TIMER 		= ../code/kernel/timer.c
 SRC_CONSOLE 	= ../code/kernel/console.c
 SRC_SYNC 			= ../code/kernel/sync.c
+SRC_KEYBOARD 	= ../code/kernel/keyboard.c
 SRC_STRING 		= ../code/kernel/lib/string.c
 
 SRC_PRINT = ../code/kernel/lib/print.S
@@ -78,6 +79,9 @@ console.o: ${SRC_CONSOLE}
 sync.o: ${SRC_SYNC}
 	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
 
+keyboard.o: ${SRC_KEYBOARD}
+	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
+
 objs: main.o \
 			init.o \
 			console.o \
@@ -89,6 +93,7 @@ objs: main.o \
 			list.o \
 			timer.o \
 			string.o \
+			keyboard.o \
 			switch.o \
 			debug.o \
 			kernel.o \
@@ -108,6 +113,7 @@ kernel.bin: objs
 		${OBJ_PATH}/list.o \
 		${OBJ_PATH}/timer.o \
 		${OBJ_PATH}/string.o \
+		${OBJ_PATH}/keyboard.o \
 		${OBJ_PATH}/switch.o \
 		${OBJ_PATH}/debug.o \
 		${OBJ_PATH}/print.o

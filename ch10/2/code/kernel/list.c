@@ -14,6 +14,7 @@ void list_insert_before(ST_LIST_ELEM *before, ST_LIST_ELEM *elem) {
   EN_INTR_STATUS old_status = intr_disable();
 
   before->prev->next = elem;
+
   elem->prev = before->prev;
   elem->next = before;
 
@@ -32,8 +33,10 @@ void list_append(ST_LIST *plist, ST_LIST_ELEM *elem) {
 
 void list_remove(ST_LIST_ELEM *pelem) {
   EN_INTR_STATUS old_status = intr_disable();
+
   pelem->prev->next = pelem->next;
   pelem->next->prev = pelem->prev;
+
   intr_set_status(old_status);
 }
 
@@ -56,15 +59,18 @@ bool elem_find(ST_LIST *plist, ST_LIST_ELEM *obj_elem) {
 
 ST_LIST_ELEM *list_traversal(ST_LIST *plist, function func, int arg) {
   ST_LIST_ELEM *elem = plist->head.next;
+
   if (list_empty(plist)) {
     return NULL;
   }
+
   while (elem != &plist->tail) {
     if (func(elem, arg)) {
       return elem;
     }
     elem = elem->next;
   }
+
   return NULL;
 }
 
