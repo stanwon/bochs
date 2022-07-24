@@ -22,6 +22,7 @@ SRC_TIMER 		= ../code/kernel/timer.c
 SRC_CONSOLE 	= ../code/kernel/console.c
 SRC_SYNC 			= ../code/kernel/sync.c
 SRC_KEYBOARD 	= ../code/kernel/keyboard.c
+SRC_IOQUEUE 	= ../code/kernel/ioqueue.c
 SRC_STRING 		= ../code/kernel/lib/string.c
 
 SRC_PRINT = ../code/kernel/lib/print.S
@@ -82,6 +83,9 @@ sync.o: ${SRC_SYNC}
 keyboard.o: ${SRC_KEYBOARD}
 	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
 
+ioqueue.o: ${SRC_IOQUEUE}
+	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
+
 objs: main.o \
 			init.o \
 			console.o \
@@ -94,8 +98,9 @@ objs: main.o \
 			timer.o \
 			string.o \
 			keyboard.o \
-			switch.o \
+			ioqueue.o \
 			debug.o \
+			switch.o \
 			kernel.o \
 			print.o
 
@@ -114,8 +119,9 @@ kernel.bin: objs
 		${OBJ_PATH}/timer.o \
 		${OBJ_PATH}/string.o \
 		${OBJ_PATH}/keyboard.o \
-		${OBJ_PATH}/switch.o \
+		${OBJ_PATH}/ioqueue.o \
 		${OBJ_PATH}/debug.o \
+		${OBJ_PATH}/switch.o \
 		${OBJ_PATH}/print.o
 
 clean_obj:
