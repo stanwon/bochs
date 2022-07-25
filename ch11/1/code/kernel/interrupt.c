@@ -46,11 +46,13 @@ static void pic_init(void) {
   outb(PIC_M_DATA, 0xfe);
   outb(PIC_S_DATA, 0xff);
 
+#if 0
   outb(PIC_M_DATA, 0xfd);
   outb(PIC_S_DATA, 0xff);
 
   outb(PIC_M_DATA, 0xfc);
   outb(PIC_S_DATA, 0xff);
+#endif
 
   put_str("pic_init done\n");
 }

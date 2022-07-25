@@ -67,6 +67,7 @@ U32 *create_page_dir(void) {
     console_put_str("create_page_dir: get_kernel_pages failed!");
     return NULL;
   }
+
   memcpy((U32 *)((U32)page_dir_vaddr + 0x300 * 4),
          (U32 *)(0xfffff000 + 0x300 * 4), 1024);
 

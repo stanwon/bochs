@@ -148,6 +148,15 @@ static void mem_pool_init(U32 all_mem) {
   lock_init(&kernel_pool.lock);
   lock_init(&user_pool.lock);
 
+  bitmap_init(&kernel_pool.pool_bitmap);
+  bitmap_init(&user_pool.pool_bitmap);
+
+  kernel_vaddr.vaddr_bitmap.btmp_bytes_len = kbm_length;
+  kernel_vaddr.vaddr_bitmap.bits =
+      (void *)(MEM_BITMAP_BASE + kbm_length + ubm_length);
+  kernel_vaddr.vaddr_start = K_HEAP_START;
+  bitmap_init(&kernel_vaddr.vaddr_bitmap);
+
   put_str("kernel_pool_bitmap_start: ");
   put_int((int)kernel_pool.pool_bitmap.bits);
   put_str(" kernel_pool_phy_addr_start: ");
@@ -157,16 +166,6 @@ static void mem_pool_init(U32 all_mem) {
   put_int(user_pool.phy_addr_start);
   put_str("\n");
 
-  bitmap_init(&kernel_pool.pool_bitmap);
-  bitmap_init(&user_pool.pool_bitmap);
-
-  kernel_vaddr.vaddr_bitmap.btmp_bytes_len = kbm_length;
-
-  kernel_vaddr.vaddr_bitmap.bits =
-      (void *)(MEM_BITMAP_BASE + kbm_length + ubm_length);
-
-  kernel_vaddr.vaddr_start = K_HEAP_START;
-  bitmap_init(&kernel_vaddr.vaddr_bitmap);
   put_str("mem_pool_init done\n");
 }
 

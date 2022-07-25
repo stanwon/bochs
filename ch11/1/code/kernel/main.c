@@ -7,10 +7,10 @@
 #include "../include/list.h"
 #include "../include/memory.h"
 #include "../include/print.h"
-#include "../include/process.h"
 #include "../include/sync.h"
 #include "../include/thread.h"
 #include "../include/tss.h"
+#include "../include/process.h"
 
 void k_thread_a(void *);
 void k_thread_b(void *);
@@ -24,8 +24,8 @@ int main(void) {
   put_str("This is kernel\n");
   init_all();
 
-  thread_start("consumer_a", 31, k_thread_a, " A_");
-  thread_start("consumer_b", 31, k_thread_b, " B_");
+  thread_start("k_thread_a", 31, k_thread_a, "argA ");
+  thread_start("k_thread_b", 31, k_thread_b, "argB ");
 
   process_execute(u_prog_a, "user_prog_a");
   process_execute(u_prog_b, "user_prog_b");

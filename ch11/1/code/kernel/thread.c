@@ -98,7 +98,6 @@ void schedule() {
   }
 
   ASSERT(!list_empty(&thread_ready_list));
-  thread_tag = NULL;
   thread_tag = list_pop(&thread_ready_list);
   ST_TASK_STRUCT *next = elem2entry(ST_TASK_STRUCT, general_tag, thread_tag);
   next->status = EN_TASK_RUNNING;

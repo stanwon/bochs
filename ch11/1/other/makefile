@@ -96,6 +96,7 @@ process.o: ${SRC_PROCESS}
 
 objs: main.o \
 			init.o \
+			process.o \
 			console.o \
 			sync.o \
 			thread.o \
@@ -108,7 +109,6 @@ objs: main.o \
 			keyboard.o \
 			ioqueue.o \
 			tss.o \
-			process.o \
 			debug.o \
 			switch.o \
 			kernel.o \
@@ -118,6 +118,7 @@ kernel.bin: objs
 	${LD} -m elf_i386 -Ttext 0xc0001500 -e main -Map ${OBJ_PATH}/kernel.map -o ${TARGET_PATH}/$@ \
 		${OBJ_PATH}/main.o \
 		${OBJ_PATH}/init.o \
+		${OBJ_PATH}/process.o \
 		${OBJ_PATH}/console.o \
 		${OBJ_PATH}/sync.o \
 		${OBJ_PATH}/thread.o \
@@ -131,7 +132,6 @@ kernel.bin: objs
 		${OBJ_PATH}/keyboard.o \
 		${OBJ_PATH}/ioqueue.o \
 		${OBJ_PATH}/tss.o \
-		${OBJ_PATH}/process.o \
 		${OBJ_PATH}/debug.o \
 		${OBJ_PATH}/switch.o \
 		${OBJ_PATH}/print.o
