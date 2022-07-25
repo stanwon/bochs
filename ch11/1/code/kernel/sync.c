@@ -1,3 +1,4 @@
+#include "../include/memory.h"
 #include "../include/sync.h"
 #include "../include/debug.h"
 #include "../include/interrupt.h"

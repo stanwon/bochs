@@ -1,7 +1,11 @@
 #ifndef __THREAD_THREAD_H
 #define __THREAD_THREAD_H
+#include "sync.h"
+#include "memory.h"
 #include "stdint.h"
 #include "list.h"
+
+#define PG_SIZE 4096
 
 typedef void thread_func(void *);
 
@@ -59,6 +63,7 @@ typedef struct tag_task_struct {
   ST_LIST_ELEM general_tag;
   ST_LIST_ELEM all_list_tag;
   U32 *pgdir;
+  ST_VIRTUAL_ADDR userprog_vaddr;
   U32 stack_magic;
 } ST_TASK_STRUCT;
 
@@ -68,5 +73,7 @@ void schedule();
 void thread_init(void);
 void thread_block(EN_TASK_STATUS stat);
 void thread_unblock(ST_TASK_STRUCT *pthread);
+void init_thread(ST_TASK_STRUCT *pthread, char *name, int prio);
+void thread_create(ST_TASK_STRUCT *pthread, thread_func function, void *func_arg);
 
 #endif

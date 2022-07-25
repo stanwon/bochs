@@ -11,7 +11,7 @@ typedef unsigned int U32;
 typedef unsigned long long int U64;
 
 #define NULL ((void*)0)
-#define bool _Bool
+#define bool int
 #define false 0
 #define true 1
 

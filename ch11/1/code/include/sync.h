@@ -3,7 +3,6 @@
 #include "list.h"
 #include "stdint.h"
 #include "thread.h"
-#include <string.h>
 
 typedef struct semaphore {
   U8 value;
@@ -11,7 +10,7 @@ typedef struct semaphore {
 } ST_SEMAPHORE;
 
 typedef struct tag_lock {
-  ST_TASK_STRUCT *holder;
+  struct tag_task_struct *holder;
   ST_SEMAPHORE semaphore;
   U32 holder_repeat_nr;
 } ST_LOCK;

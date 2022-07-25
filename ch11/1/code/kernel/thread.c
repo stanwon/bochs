@@ -1,3 +1,4 @@
+#include "../include/memory.h"
 #include "../include/thread.h"
 #include "../include/debug.h"
 #include "../include/global.h"
@@ -6,8 +7,7 @@
 #include "../include/memory.h"
 #include "../include/print.h"
 #include "../include/string.h"
-
-#define PG_SIZE 4096
+#include "../include/process.h"
 
 ST_TASK_STRUCT *main_thread;
 ST_LIST thread_ready_list;
@@ -102,6 +102,7 @@ void schedule() {
   thread_tag = list_pop(&thread_ready_list);
   ST_TASK_STRUCT *next = elem2entry(ST_TASK_STRUCT, general_tag, thread_tag);
   next->status = EN_TASK_RUNNING;
+  process_activate(next);
   switch_to(cur, next);
 }
 

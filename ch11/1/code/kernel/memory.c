@@ -30,7 +30,17 @@ static void *vaddr_get(EN_POOL_FLAG pf, U32 pg_cnt) {
     }
     vaddr_start = kernel_vaddr.vaddr_start + bit_idx_start * PG_SIZE;
   } else {
-    //user
+    ST_TASK_STRUCT *cur = running_thread();
+    bit_idx_start = bitmap_scan(&cur->userprog_vaddr.vaddr_bitmap, pg_cnt);
+    if (-1 == bit_idx_start) {
+      return NULL;
+    }
+
+    while (cnt < pg_cnt) {
+      bitmap_set(&cur->userprog_vaddr.vaddr_bitmap, bit_idx_start + cnt++, 1);
+    }
+    vaddr_start = cur->userprog_vaddr.vaddr_start + bit_idx_start * PG_SIZE;
+    ASSERT((U32)vaddr_start < (0xc0000000 - PG_SIZE));
   }
   return (void *)vaddr_start;
 }
@@ -134,6 +144,10 @@ static void mem_pool_init(U32 all_mem) {
 
   kernel_pool.pool_bitmap.bits = (void *)MEM_BITMAP_BASE;
   user_pool.pool_bitmap.bits = (void *)(MEM_BITMAP_BASE + kbm_length);
+
+  lock_init(&kernel_pool.lock);
+  lock_init(&user_pool.lock);
+
   put_str("kernel_pool_bitmap_start: ");
   put_int((int)kernel_pool.pool_bitmap.bits);
   put_str(" kernel_pool_phy_addr_start: ");
@@ -161,4 +175,46 @@ void mem_init() {
   U32 mem_bytes_total = (*(U32 *)(0xb00));
   mem_pool_init(mem_bytes_total);
   put_str("mem_init done\n");
+}
+
+void *get_user_pages(U32 pg_cnt) {
+  lock_acquire(&user_pool.lock);
+  void *vaddr = malloc_page(EN_PF_USER, pg_cnt);
+  memset(vaddr, 0, pg_cnt * PG_SIZE);
+  lock_release(&user_pool.lock);
+  return vaddr;
+}
+
+void *get_a_page(EN_POOL_FLAG pf, U32 vaddr) {
+  ST_POOL *mem_pool = pf & EN_PF_KERNEL ? &kernel_pool : &user_pool;
+  lock_acquire(&mem_pool->lock);
+
+  ST_TASK_STRUCT *cur = running_thread();
+  U32 bit_idx = -1;
+
+  if (NULL != cur->pgdir && EN_PF_USER == pf) {
+    bit_idx = (vaddr - cur->userprog_vaddr.vaddr_start) / PG_SIZE;
+    ASSERT(bit_idx > 0);
+    bitmap_set(&cur->userprog_vaddr.vaddr_bitmap, bit_idx, 1);
+  } else if (cur->pgdir == NULL && pf == EN_PF_KERNEL) {
+    bit_idx = (vaddr - kernel_vaddr.vaddr_start) / PG_SIZE;
+    ASSERT(bit_idx > 0);
+    bitmap_set(&kernel_vaddr.vaddr_bitmap, bit_idx, 1);
+  } else {
+    PANIC("get_a_page: not allow kernel alloc userspace or user alloc "
+          "kernelspace by get_a_page");
+  }
+
+  void *page_phyaddr = palloc(mem_pool);
+  if (NULL == page_phyaddr) {
+    return NULL;
+  }
+  page_table_add((void *)vaddr, page_phyaddr);
+  lock_release(&mem_pool->lock);
+  return (void *)vaddr;
+}
+
+U32 addr_v2p(U32 vaddr) {
+  U32 *pte = pte_ptr(vaddr);
+  return ((*pte & 0xfffff000) + (vaddr & 0x00000fff));
 }

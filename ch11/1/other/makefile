@@ -23,6 +23,8 @@ SRC_CONSOLE 	= ../code/kernel/console.c
 SRC_SYNC 			= ../code/kernel/sync.c
 SRC_KEYBOARD 	= ../code/kernel/keyboard.c
 SRC_IOQUEUE 	= ../code/kernel/ioqueue.c
+SRC_TSS	 			= ../code/kernel/tss.c
+SRC_PROCESS	 	= ../code/kernel/process.c
 SRC_STRING 		= ../code/kernel/lib/string.c
 
 SRC_PRINT = ../code/kernel/lib/print.S
@@ -86,6 +88,12 @@ keyboard.o: ${SRC_KEYBOARD}
 ioqueue.o: ${SRC_IOQUEUE}
 	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
 
+tss.o: ${SRC_TSS}
+	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
+
+process.o: ${SRC_PROCESS}
+	${GCC} ${CFLAGS} -o ${OBJ_PATH}/$@ $<
+
 objs: main.o \
 			init.o \
 			console.o \
@@ -99,6 +107,8 @@ objs: main.o \
 			string.o \
 			keyboard.o \
 			ioqueue.o \
+			tss.o \
+			process.o \
 			debug.o \
 			switch.o \
 			kernel.o \
@@ -120,6 +130,8 @@ kernel.bin: objs
 		${OBJ_PATH}/string.o \
 		${OBJ_PATH}/keyboard.o \
 		${OBJ_PATH}/ioqueue.o \
+		${OBJ_PATH}/tss.o \
+		${OBJ_PATH}/process.o \
 		${OBJ_PATH}/debug.o \
 		${OBJ_PATH}/switch.o \
 		${OBJ_PATH}/print.o

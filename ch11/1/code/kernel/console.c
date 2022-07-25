@@ -1,6 +1,7 @@
 #include "../include/console.h"
 #include "../include/print.h"
 #include "../include/stdint.h"
+#include "../include/memory.h"
 #include "../include/sync.h"
 #include "../include/thread.h"
 

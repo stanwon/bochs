@@ -2,6 +2,7 @@
 #include "../include/debug.h"
 #include "../include/io.h"
 #include "../include/print.h"
+#include "../include/memory.h"
 #include "../include/thread.h"
 #include "../include/interrupt.h"
 
